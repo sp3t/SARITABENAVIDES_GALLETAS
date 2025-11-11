@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>🍪 Galletas Sarita — Tienda</title>
+  <style>
+    :root {
+      --crema: #fff7ee;
+      --rosado: #f6d6de;
+      --rosado-fuerte: #e89fb0;
+      --texto: #3a2c2c;
+      --verde: #6bbf73;
+      --rojo: #e05454;
+      --radius: 12px;
+      --sombra: rgba(0,0,0,0.08);
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: linear-gradient(180deg, var(--crema), #fff);
+      color: var(--texto);
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      color: var(--rosado-fuerte);
+      font-size: 1.6rem;
+    }
+
+    select {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--rosado-fuerte);
+      color: var(--texto);
+      margin: 10px 0 20px;
+      font-size: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 20px;
+      margin-top: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    #productos {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 15px;
+    }
+
+    .producto {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: 0 6px 18px var(--sombra);
+      padding: 10px;
+      text-align: left;
+      transition: transform 0.2s;
+    }
+    .producto:hover { transform: scale(1.03); }
+
+    .producto img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: var(--crema);
+    }
+
+    .producto h3 {
+      font-size: 1rem;
+      color: var(--rosado-fuerte);
+      margin: 8px 0 4px;
+    }
+
+    .producto p { margin: 0; }
+
+    .producto button {
+      background: linear-gradient(90deg, var(--rosado-fuerte), var(--rosado));
+      border: none;
+      color: white;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .carrito {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: 0 6px 18px var(--sombra);
+      padding: 15px;
+      text-align: left;
+    }
+
+    .carrito h2 {
+      color: var(--rosado-fuerte);
+      font-size: 1.2rem;
+      margin-top: 0;
+    }
+
+    #lista-carrito {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--crema);
+      border-radius: 8px;
+      padding: 8px;
+      margin-bottom: 6px;
+    }
+
+    .item img {
+      width: 50px;
+      height: 50px;
+      border-radius: 6px;
+      object-fit: cover;
+    }
+
+    .controles {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-mini {
+      background: var(--rosado-fuerte);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .btn-mini.rojo { background: var(--rojo); }
+
+    .totales {
+      border-top: 1px dashed #e3c6cc;
+      margin-top: 10px;
+      padding-top: 10px;
+      font-size: 0.9rem;
+    }
+
+    .totales div {
+      display: flex;
+      justify-content: space-between;
+      margin: 4px 0;
+    }
+
+    #btn-vaciar, #btn-finalizar {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    #btn-vaciar {
+      background: transparent;
+      border: 1px solid var(--rosado-fuerte);
+      color: var(--rosado-fuerte);
+    }
+
+    #btn-finalizar {
+      background: var(--verde);
+      color: white;
+    }
+
+    #paypal-button-container {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🍪 Venta de Galletas by Sarita Benavides Vela 🍪</h1>
+
+  <div>
+    <label for="categoria">Filtrar por categoría:</label>
+    <select id="categoria">
+      <option value="todas">Todas</option>
+      <option value="saludables">Galletas saludables</option>
+      <option value="chocolate">Galletas de chocolate</option>
+      <option value="temporada">De temporada</option>
+    </select>
+  </div>
+
+  <div class="grid">
+    <section id="productos"></section>
+
+    <aside class="carrito">
+      <h2>🧾 Carrito de Compras (0)</h2>
+      <ul id="lista-carrito"></ul>
+
+      <div class="totales">
+        <div><span>Subtotal</span><strong id="subtotal-text">$0</strong></div>
+        <div><span>Impuestos (19%)</span><strong id="impuestos-text">$0</strong></div>
+        <div><span>Descuento</span><strong id="descuento-text">$0</strong></div>
+        <div><span>Total</span><strong id="total-text">$0</strong></div>
+      </div>
+
+      <button id="btn-vaciar">🧼 Vaciar Carrito</button>
+      <button id="btn-finalizar">✅ Finalizar Compra</button>
+      <div id="paypal-button-container" style="display:none;"></div>
+    </aside>
+  </div>
+
+  <!-- ✅ SDK PayPal Sandbox con tarjetas habilitadas -->
+  <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD&components=buttons,funding-eligibility&enable-funding=card,credit,paylater"></script>
+
+  <script>
+    const productos = [
+      { id: 1, nombre: "Red Velvet", precio: 7000, categoria: "temporada", imagen: "https://okdiario.com/img/2016/01/02/receta-de-red-velvet-cookies-655x368.jpg" },
+      { id: 2, nombre: "Chips de chocolate", precio: 6000, categoria: "chocolate", imagen: "https://cdn7.kiwilimon.com/recetaimagen/31079/640x640/35433.jpg.jpg" },
+      { id: 3, nombre: "Avena con pasas", precio: 5000, categoria: "saludables", imagen: "https://www.infobae.com/new-resizer/YkdzwadaHWlEM28siCbfDqxbv_s=/arc-anglerfish-arc2-prod-infobae/public/QFO7M3S5ENBOHIW334IIWINZ3E.jpg" },
+      { id: 4, nombre: "Chocolate", precio: 7000, categoria: "chocolate", imagen: "https://www.splenda.com/wp-content/uploads/2020/08/espresso-chocolate-chunk-cookies-with-sea-salt-2048x1024.jpg" },
+      { id: 5, nombre: "Oreo", precio: 9000, categoria: "temporada", imagen: "https://houseofnasheats.com/wp-content/uploads/2025/05/Crumbl-Oreo-Cookies-Square-1.jpg" }
+    ];
+
+    const formatoCOP = new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 });
+    const TASA_CAMBIO = 4000; // COP -> USD aproximado
+    const CART_KEY = "galletas_sarita_cart";
+    const contenedor = document.getElementById("productos");
+    const filtro = document.getElementById("categoria");
+    const listaCarrito = document.getElementById("lista-carrito");
+    const subtotalText = document.getElementById("subtotal-text");
+    const impuestosText = document.getElementById("impuestos-text");
+    const descuentoText = document.getElementById("descuento-text");
+    const totalText = document.getElementById("total-text");
+    const tituloCarrito = document.querySelector(".carrito h2");
+    const btnVaciar = document.getElementById("btn-vaciar");
+    const btnFinalizar = document.getElementById("btn-finalizar");
+    const paypalContainer = document.getElementById("paypal-button-container");
+    let carrito = new Map();
+
+    function renderProductos(filtroCat = "todas") {
+      contenedor.innerHTML = "";
+      const lista = filtroCat === "todas" ? productos : productos.filter(p => p.categoria === filtroCat);
+      lista.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "producto";
+        div.innerHTML = `
+          <img src="${p.imagen}" alt="${p.nombre}" />
+          <h3>${p.nombre}</h3>
+          <p>${formatoCOP.format(p.precio)}</p>
+          <button data-id="${p.id}">Agregar al carrito</button>
+        `;
+        contenedor.appendChild(div);
+      });
+    }
+
+    filtro.addEventListener("change", () => renderProductos(filtro.value));
+
+    contenedor.addEventListener("click", e => {
+      const btn = e.target.closest("button[data-id]");
+      if (!btn) return;
+      const id = parseInt(btn.dataset.id);
+      agregarAlCarrito(id);
+    });
+
+    function agregarAlCarrito(id) {
+      const prod = productos.find(p => p.id === id);
+      if (!prod) return;
+      if (carrito.has(id)) carrito.get(id).cantidad++;
+      else carrito.set(id, { ...prod, cantidad: 1 });
+      guardarYActualizar();
+    }
+
+    function disminuir(id) {
+      if (!carrito.has(id)) return;
+      const item = carrito.get(id);
+      if (item.cantidad <= 1) carrito.delete(id);
+      else item.cantidad--;
+      guardarYActualizar();
+    }
+
+    function aumentar(id) {
+      if (!carrito.has(id)) return;
+      carrito.get(id).cantidad++;
+      guardarYActualizar();
+    }
+
+    function eliminar(id) {
+      carrito.delete(id);
+      guardarYActualizar();
+    }
+
+    listaCarrito.addEventListener("click", e => {
+      const btn = e.target.closest(".btn-mini");
+      if (!btn) return;
+      const id = parseInt(btn.dataset.id);
+      if (btn.classList.contains("menos")) disminuir(id);
+      if (btn.classList.contains("mas")) aumentar(id);
+      if (btn.classList.contains("rojo")) eliminar(id);
+    });
+
+    function renderCarrito() {
+      listaCarrito.innerHTML = "";
+      let subtotal = 0;
+      let totalItems = 0;
+
+      carrito.forEach(item => {
+        subtotal += item.precio * item.cantidad;
+        totalItems += item.cantidad;
+        const li = document.createElement("li");
+        li.className = "item";
+        li.innerHTML = `
+          <img src="${item.imagen}" alt="${item.nombre}" />
+          <div><strong>${item.nombre}</strong><br>${formatoCOP.format(item.precio)} x ${item.cantidad}</div>
+          <div class="controles">
+            <button class="btn-mini menos" data-id="${item.id}">−</button>
+            <button class="btn-mini mas" data-id="${item.id}">+</button>
+            <button class="btn-mini rojo" data-id="${item.id}">✕</button>
+          </div>
+        `;
+        listaCarrito.appendChild(li);
+      });
+
+      const impuesto = Math.round(subtotal * 0.19);
+      const descuento = subtotal >= 30000 ? Math.round(subtotal * 0.05) : 0;
+      const total = subtotal + impuesto - descuento;
+
+      subtotalText.textContent = formatoCOP.format(subtotal);
+      impuestosText.textContent = formatoCOP.format(impuesto);
+      descuentoText.textContent = descuento > 0 ? `- ${formatoCOP.format(descuento)}` : formatoCOP.format(0);
+      totalText.textContent = formatoCOP.format(total);
+      tituloCarrito.textContent = `🧾 Carrito de Compras (${totalItems})`;
+
+      if (total > 0) {
+        paypalContainer.style.display = "block";
+        renderPayPal(total);
+      } else {
+        paypalContainer.innerHTML = "";
+        paypalContainer.style.display = "none";
+      }
+    }
+
+    btnVaciar.addEventListener("click", () => {
+      if (carrito.size === 0) return alert("El carrito ya está vacío.");
+      if (confirm("¿Vaciar carrito?")) {
+        carrito.clear();
+        guardarYActualizar();
+      }
+    });
+
+    btnFinalizar.addEventListener("click", () => {
+      if (carrito.size === 0) return alert("Agrega productos antes de comprar.");
+      alert("🎉 Gracias por tu compra. Usa el botón PayPal para simular el pago en sandbox.");
+    });
+
+    function guardarYActualizar() {
+      localStorage.setItem(CART_KEY, JSON.stringify(Array.from(carrito.entries())));
+      renderCarrito();
+    }
+
+    function cargarCarrito() {
+      const data = localStorage.getItem(CART_KEY);
+      if (!data) return;
+      carrito = new Map(JSON.parse(data));
+    }
+
+    // 💳 PayPal Sandbox con tarjeta habilitada
+    function renderPayPal(total) {
+      const totalUSD = (total / TASA_CAMBIO).toFixed(2);
+      paypalContainer.innerHTML = "";
+      paypal.Buttons({
+        style: { layout: "vertical", color: "gold", shape: "pill", label: "pay" },
+        fundingSource: paypal.FUNDING.UNSPECIFIED,
+        createOrder: (data, actions) => actions.order.create({
+          purchase_units: [{
+            amount: { value: totalUSD, currency_code: "USD" },
+            description: "Compra en Galletas Sarita 🍪"
+          }]
+        }),
+        onApprove: (data, actions) => actions.order.capture().then(details => {
+          alert(`✅ Pago aprobado por ${details.payer.name.given_name}. ¡Gracias por tu compra!`);
+          carrito.clear();
+          guardarYActualizar();
+        }),
+        onError: err => {
+          console.error("Error PayPal:", err);
+          alert("⚠️ Error al procesar el pago. Intenta de nuevo.");
+        }
+      }).render("#paypal-button-container");
+    }
+
+    renderProductos();
+    cargarCarrito();
+    renderCarrito();
+  </script>
+</body>
+</html>
