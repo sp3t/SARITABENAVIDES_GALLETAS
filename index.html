@@ -200,11 +200,12 @@
 
       <button id="btn-vaciar">🧼 Vaciar Carrito</button>
       <button id="btn-finalizar">✅ Finalizar Compra</button>
-      <div id="paypal-button-container"></div>
+      <div id="paypal-button-container" style="display:none;"></div>
     </aside>
   </div>
 
-  <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=COP"></script>
+  <!-- ✅ SDK PayPal Sandbox: reemplaza el client-id con el tuyo -->
+  <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD&components=buttons,funding-eligibility"></script>
 
   <script>
     const productos = [
@@ -231,6 +232,7 @@
 
     let carrito = new Map();
     const CART_KEY = "galletas_sarita_cart";
+    const TASA_CAMBIO = 4000; // aproximado COP→USD (ajusta según necesidad)
 
     function renderProductos() {
       contenedor.innerHTML = "";
@@ -357,18 +359,28 @@
       carrito = new Map(JSON.parse(data));
     }
 
+    // 💳 Integración PayPal Sandbox (USD)
+    let paypalRenderizado = null;
     function renderPayPal(total) {
+      const totalUSD = (total / TASA_CAMBIO).toFixed(2);
+      if (paypalRenderizado === totalUSD) return;
+      paypalRenderizado = totalUSD;
       paypalContainer.innerHTML = "";
       paypal.Buttons({
         style: { layout: "vertical", color: "gold", shape: "pill", label: "pay" },
+        fundingSource: paypal.FUNDING.CARD,
         createOrder: (data, actions) => actions.order.create({
-          purchase_units: [{ amount: { value: total.toString(), currency_code: "COP" } }]
+          purchase_units: [{ amount: { value: totalUSD, currency_code: "USD" } }]
         }),
         onApprove: (data, actions) => actions.order.capture().then(() => {
-          alert("Pago aprobado en modo sandbox. ¡Gracias!");
+          alert("✅ Pago aprobado en modo sandbox. ¡Gracias!");
           carrito.clear();
           guardarYActualizar();
-        })
+        }),
+        onError: (err) => {
+          console.error(err);
+          alert("⚠️ Error en el pago. Intenta nuevamente.");
+        }
       }).render("#paypal-button-container");
     }
 
